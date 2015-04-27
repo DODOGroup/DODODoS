@@ -6,11 +6,8 @@ using System.Threading.Tasks;
 
 namespace DODODoS
 {
-    class Program
+    public class TCP
     {
-        static void Main(string[] args)
-        {
 
-        }
     }
 }
