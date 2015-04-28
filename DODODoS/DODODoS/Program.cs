@@ -13,12 +13,16 @@ namespace DODODoS
         {
             bool exit = true;
             LoadCommands();
+            Help();
 
             while (exit)
             {
                 Console.Write("> ");
                 string command = Console.ReadLine().ToLower();
-                cmd[command]();
+                if (cmd.ContainsKey(command))
+                    cmd[command]();
+                else
+                    Console.WriteLine("Unknown command");
             }
         }
         /// <summary>
@@ -26,15 +30,34 @@ namespace DODODoS
         /// </summary>
         static void LoadCommands()
         {
+            //      <USELESS CODE>
+            ConsoleColor tmp = Console.ForegroundColor;
+            Console.ForegroundColor = Console.BackgroundColor;
+            Console.BackgroundColor = tmp;
+            Console.WriteLine("Welcome to DODODoS 2.0");
+            Console.BackgroundColor = Console.ForegroundColor;
+            Console.ForegroundColor = tmp;
+            //      </USELESS CODE>
             cmd = new Dictionary<string, Action>();
             cmd.Add("udp", new Action(UDP));
             cmd.Add("tcp", new Action(TCP));
+            cmd.Add("help", new Action(Help));
             cmd.Add("exit", new Action(Exit));
         }
 
         static void Exit()
         {
             Environment.Exit(0);
+        }
+        /// <summary>
+        /// Prints the list of commands
+        /// </summary>
+        static void Help()
+        {
+            Console.WriteLine("Available commands:");
+            foreach(string s in cmd.Keys){
+                Console.WriteLine("  " + s.ToUpper());
+            }
         }
 
         /// <summary>
