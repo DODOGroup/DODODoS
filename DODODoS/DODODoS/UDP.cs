@@ -11,9 +11,9 @@ namespace DODODoS
         UdpClient client;
         public UDP()
         {
-            client = new UdpClient();
+            client= new UdpClient();
         }
-
+        
         public bool Connect(string host, int port)
         {
             try
