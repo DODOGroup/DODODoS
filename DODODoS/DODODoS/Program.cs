@@ -55,7 +55,8 @@ namespace DODODoS
         static void Help()
         {
             Console.WriteLine("Available commands:");
-            foreach(string s in cmd.Keys){
+            foreach (string s in cmd.Keys)
+            {
                 Console.WriteLine("  " + s.ToUpper());
             }
         }
@@ -78,7 +79,7 @@ namespace DODODoS
         }
 
         /// <summary>
-        /// Starts a TCp attack
+        /// Starts a TCP attack
         /// </summary>
         static void TCP()
         {
