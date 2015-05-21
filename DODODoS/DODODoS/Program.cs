@@ -29,7 +29,7 @@ namespace DODODoS
             }
         }
         /// <summary>
-        /// Loads the various commands in the dictionary
+        /// Loads the commands in the dictionary
         /// </summary>
         static void LoadCommands()
         {
@@ -74,6 +74,9 @@ namespace DODODoS
             }
         }
 
+        /// <summary>
+        /// Lists all current attacks
+        /// </summary>
         static void List()
         {
             if (UdpVictims.Count > 0)
@@ -174,6 +177,11 @@ namespace DODODoS
             }
         }
 
+        /// <summary>
+        /// Generates a random byte array
+        /// </summary>
+        /// <param name="lenght">The lenght of the array to be generated</param>
+        /// <returns>The array</returns>
         static byte[] Generate(int lenght)
         {
             byte[] b = new byte[lenght];
