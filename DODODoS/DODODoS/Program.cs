@@ -21,7 +21,7 @@ namespace DODODoS
             while (exit)
             {
                 Console.Write("DODODoS> ");
-                string command = Console.ReadLine().ToLower();
+                string command = Console.ReadLine();
                 if (cmd.ContainsKey(command))
                     cmd[command]();
                 else
@@ -70,7 +70,7 @@ namespace DODODoS
             Console.WriteLine("Available commands:");
             foreach (string s in cmd.Keys)
             {
-                Console.WriteLine("  " + s.ToUpper());
+                Console.WriteLine("  " + s);
             }
         }
 
@@ -168,7 +168,7 @@ namespace DODODoS
             Console.Write("Port: ");
             port = Convert.ToInt32(Console.ReadLine());
             Console.Write("Random string or message? [R/M]: ");
-            if (Console.ReadLine().ToLower() == "r")
+            if (Console.ReadLine() == "r")
             {
                 Console.Write("String lenght: ");
                 message = Generate(Convert.ToInt32(Console.ReadLine()));
