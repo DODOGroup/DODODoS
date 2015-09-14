@@ -20,7 +20,7 @@ namespace DODODoS
 
             while (exit)
             {
-                Console.Write("> ");
+                Console.Write("DODODoS> ");
                 string command = Console.ReadLine().ToLower();
                 if (cmd.ContainsKey(command))
                     cmd[command]();
@@ -107,6 +107,8 @@ namespace DODODoS
             int port;
             byte[] message;
             Collect(out host, out port, out message);
+            Console.WriteLine("Attacking...");
+
             UdpVictims.Insert(0, new Tuple<string, UDP>(host + ":" + port, new UDP()));
             UdpVictims[0].Item2.Connect(host, port);
             UdpVictims[0].Item2.Attack(message, Environment.ProcessorCount * 2);
@@ -122,7 +124,8 @@ namespace DODODoS
             byte[] message;
             TCP t;
             Collect(out host, out port, out message);
-            
+            Console.WriteLine("Attacking...");
+
             t = new TCP();
             bool conn = t.Connect(host, port);
 
