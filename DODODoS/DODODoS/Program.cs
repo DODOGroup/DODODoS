@@ -77,23 +77,28 @@ namespace DODODoS
         /// </summary>
         static void List()
         {
+            int count = 0;
             if (UdpVictims.Count > 0)
             {
-                Console.WriteLine("UDP attacks:");
-                foreach (Tuple<string, UDP> victim in UdpVictims)
-                    Console.WriteLine("   {0}", victim.Item1);
+                Console.WriteLine("UDP sessions:");
+                /*foreach (Tuple<string, UDP> victim in UdpVictims)
+                    Console.WriteLine("   {0}", victim.Item1);*/
+                for (; count < UdpVictims.Count; count++)
+                    Console.WriteLine(" {0}.  {1}", count, UdpVictims[count].Item1);
             }
             else
-                Console.WriteLine("No UDP attacks in progress.");
+                Console.WriteLine("No UDP sessions.");
 
             if (TcpVictims.Count > 0)
             {
-            Console.WriteLine("TCP attacks:");
-            foreach (Tuple<string, TCP> victim in TcpVictims)
-                Console.WriteLine("   {0}", victim.Item1);
+            Console.WriteLine("TCP sessions:");
+            /*foreach (Tuple<string, TCP> victim in TcpVictims)
+                Console.WriteLine("   {0}", victim.Item1);*/
+            for (int i = 0; i < TcpVictims.Count; count++, i++)
+                Console.WriteLine(" {0}.  {1}", count, TcpVictims[i].Item1);
             }
             else
-                Console.WriteLine("No TCP attacks in progress.");
+                Console.WriteLine("No TCP sessions.");
         }
 
         /// <summary>
@@ -144,13 +149,33 @@ namespace DODODoS
         /// </summary>
         static void Stop()
         {
-            foreach (Tuple<string, UDP> victim in UdpVictims)
-                victim.Item2.Stop();
-            foreach (Tuple<string, TCP> victim in TcpVictims)
-                victim.Item2.Stop();
-            UdpVictims.Clear();
-            TcpVictims.Clear();
-            Console.WriteLine("Attacks stopped succesfully.");
+            Console.WriteLine("Wich session do you want to stop?");
+            List();
+            Console.Write("[All]> ");
+            int n = Convert.ToInt32(Console.ReadLine());
+
+            if (n == null)
+            {
+                foreach (Tuple<string, UDP> victim in UdpVictims)
+                    victim.Item2.Stop();
+                foreach (Tuple<string, TCP> victim in TcpVictims)
+                    victim.Item2.Stop();
+                UdpVictims.Clear();
+                TcpVictims.Clear();
+            }else
+            {
+                if (n > UdpVictims.Count - 1)
+                {
+                    TcpVictims[n - (UdpVictims.Count)].Item2.Stop();
+                    TcpVictims.RemoveAt(n - (UdpVictims.Count));
+                }
+                else
+                {
+                    UdpVictims[n].Item2.Stop();
+                    UdpVictims.RemoveAt(n);
+                }
+            }
+            Console.WriteLine("Session(s) stopped succesfully.");
         }
 
         /// <summary>
