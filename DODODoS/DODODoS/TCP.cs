@@ -52,7 +52,7 @@ namespace DODODoS
                     {
                         client.Client.Send(message);
                     }
-                    catch (SocketException e)
+                    catch (SocketException )
                     {
                         return false;
                     }
