@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Diagnostics;
+using System.Threading;
 
 namespace DODODoS
 {
@@ -10,9 +12,13 @@ namespace DODODoS
 
         static List<Tuple<string, UDP>> UdpVictims = new List<Tuple<string, UDP>>();
         static List<Tuple<string, TCP>> TcpVictims = new List<Tuple<string, TCP>>();
+        static Process FakeConsole = new Process();
+        static string FakeConsoleLog = "";
+        static object toLock = default(object);
         static void Main(string[] args)
         {
             bool exit = true;
+            CreateFakeConsole();
             LoadCommands();
             Help();
 
@@ -24,6 +30,38 @@ namespace DODODoS
                     cmd[command]();
                 else
                     Console.WriteLine("Unknown command");
+            }
+        }
+        /// <summary>
+        /// Creates the fake console
+        /// </summary>
+        static void CreateFakeConsole()
+        {
+            ProcessStartInfo psi = new ProcessStartInfo()
+            {
+                FileName = "cmd.exe",
+                UseShellExecute = false,
+                RedirectStandardError = true,
+                RedirectStandardInput = true,
+                RedirectStandardOutput = true,
+            };
+            FakeConsole.StartInfo = psi;
+            FakeConsole.Start();
+            //Creazione thread lettura
+            {
+                new Thread(() =>
+                {
+                    while (!FakeConsole.StandardOutput.EndOfStream)
+                    {
+                        lock (toLock)
+                        {
+                            FakeConsoleLog += FakeConsole.StandardOutput.ReadLine();
+                        }
+                    }
+                })
+                {
+                    IsBackground = true,
+                }.Start();
             }
         }
         /// <summary>
