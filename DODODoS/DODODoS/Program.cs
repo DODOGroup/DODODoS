@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Diagnostics;
 using System.Threading;
+using System.Net;
 
 namespace DODODoS
 {
@@ -115,17 +116,25 @@ namespace DODODoS
             Console.ForegroundColor = Console.BackgroundColor;
             Console.BackgroundColor = tmp;
             Console.WriteLine("Welcome to DODODoS 2.0");
+            GetLocalIP();
             Console.BackgroundColor = Console.ForegroundColor;
             Console.ForegroundColor = tmp;
             //      </USELESS CODE>
             cmd = new Dictionary<string, Action>();
             cmd.Add("udp", new Action(UDP));
             cmd.Add("tcp", new Action(TCP));
+            cmd.Add("ip", new Action(GetLocalIP));
             cmd.Add("stop", new Action(Stop));
             cmd.Add("list", new Action(List));
             cmd.Add("clear", new Action(Clear));
             cmd.Add("help", new Action(Help));
             cmd.Add("exit", new Action(Exit));
+            
+        }
+
+        static void GetLocalIP()
+        {
+            Console.WriteLine("My IP: " + Dns.GetHostEntry(Dns.GetHostName()).AddressList[1].ToString());
         }
         static void Exit()
         {
