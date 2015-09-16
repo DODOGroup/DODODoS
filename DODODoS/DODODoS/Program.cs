@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Net;
 using Chat;
+using System.Net.Sockets;
 
 namespace DODODoS {
     class Program {
@@ -117,8 +118,20 @@ namespace DODODoS {
             cmd.Add("exit", new Action(Exit));
 
         }
-        static void GetLocalIP() {
-            Console.WriteLine("My IP: " + Dns.GetHostEntry(Dns.GetHostName()).AddressList[1].ToString());
+        static void GetLocalIP()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            bool print = false;
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    if (print)
+
+                        Console.WriteLine("My IP: " + ip.ToString());
+                    print = true;
+                }
+            }
         }
         static void Exit() {
             Environment.Exit(0);
