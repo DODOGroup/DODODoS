@@ -31,7 +31,7 @@ namespace DODODoS
                 client.Connect(host, port);
                 return true;
             }
-            catch (SocketException e)
+            catch (SocketException)
             {
                 return false;
             }
