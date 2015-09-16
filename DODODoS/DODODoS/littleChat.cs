@@ -2,11 +2,11 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Text
+using System.Text.RegularExpressions;
 
 namespace DODODoS{
     static class littleChat{
-        public static readonly string Signature = "--Dodo--";
+        public static readonly string Signature = "?-Dodo-?";
         public static void Send(string s){
             var udp = new UdpClient();
             var mess = UTF8Encoding.UTF8.GetBytes(Signature + udp + Signature);
@@ -17,7 +17,12 @@ namespace DODODoS{
             var udp = new UdpClient();
             var ipe = new IPEndPoint(IPAddress.Any,666);
             var mess = UTF8Encoding.UTF8.GetString(udp.Receive(ref ipe));
-            if()
+            var temp = Regex.Match(mess, Signature + "*" + Signature);
+            if (temp.Success)
+            {
+                return temp.Value;
+            }
+            return Recive();
         }
     }
 }
