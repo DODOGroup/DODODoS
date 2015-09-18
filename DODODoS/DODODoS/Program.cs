@@ -15,11 +15,12 @@ namespace DODODoS {
         static Process FakeConsole = new Process();
         static string FakeConsoleLog = "";
         static readonly string FakeConsolePointer = @"C:\User\{0}";
-        static string[] ChatBuffer = new string[Console.WindowHeight - 3];
+        static string[] ChatBuffer = new string[Console.WindowHeight - 5];
         static int ptr = 0;
 
         static object toLockSyncThread = new object();
         static object toLockSyncHiddenNot = new object();
+        static object toLockChat = new object();
 
         static void Main(string[] args) {
             Console.CancelKeyPress += Console_CancelKeyPress;
@@ -272,27 +273,70 @@ namespace DODODoS {
         static void StartChat() {
             Console.Clear();
             consoleInterface.DrawTop("DodoSWAG CHAT 1.00");
-
             consoleInterface.WriteDirect(3, 0, "<sys>Username: ");
             string username = Console.ReadLine();
             string message = "";
             new Thread(() => {
-                var v = littleChat.Receive();
-                if (ptr < ChatBuffer.Length) {
-                    ChatBuffer[ptr] = v;
-                    ptr++;
-                } else {
-                    ptr = 0;
-                    ChatBuffer[ptr] = v;
+                while (true)
+                {
+                    var v = littleChat.Receive();
+                    EditChatBuffer(v);
+                    consoleInterface.DrawTop("DodoSWAG CHAT 1.00");
+                    for (int i = 0; i < ChatBuffer.Length; i++ )
+                    {
+                        consoleInterface.WriteDirect(i + 3, 1, ChatBuffer[i]);
+                    }
                 }
+
             }) { IsBackground = true }.Start();
-            while (message != "exit") {
-                Console.Write(" > ");
-                message = Console.ReadLine();
+            new Thread(()=> {
+                while (true)
+                {
+                    WriteChatBuffer();
+                    Thread.Sleep(1000);
+                }
+            }) {IsBackground = true }.Start();
+            while (message != "/exit") {
+                consoleInterface.WriteDirect(Console.WindowHeight-1,0," > ");
+                message = "<" +username + ">" + Console.ReadLine();
+                consoleInterface.DrawTop("DodoSWAG CHAT 1.00");
                 littleChat.Send(message);
+                EditChatBuffer(message);                
             }
 
 
+        }
+        static void EditChatBuffer(string l)
+        {
+            lock (toLockChat)
+            {
+                consoleInterface.ClearLine(ptr + 4);
+                if (ptr < ChatBuffer.Length)
+                {
+                    ChatBuffer[ptr] = l;
+                    ptr++;
+                }
+                else
+                {
+                    ptr = 0;
+                    ChatBuffer[ptr] = l;
+                    
+                }
+            }
+        }
+        static void WriteChatBuffer()
+        {
+            lock (toLockChat)
+            {
+                var top = Console.CursorTop;
+                var left = Console.CursorLeft;
+                for (int i = 0; i < ChatBuffer.Length; i++)
+                {
+                    consoleInterface.WriteDirect(i + 4, 1, ChatBuffer[i]??"");
+                }
+                Console.CursorTop = top;
+                Console.CursorLeft = left;
+            }
         }
     }
 }

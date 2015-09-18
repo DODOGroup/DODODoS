@@ -29,26 +29,36 @@ namespace Chat{
     }
     public static class consoleInterface {
         public static void DrawTop(string s) {
+            Console.SetCursorPosition(0, 0);
             Console.BackgroundColor = ConsoleColor.Gray;
             Console.ForegroundColor = ConsoleColor.Black;
+            for (int i = 0; i < Console.WindowWidth; i++)
+            {
+                Console.Write(" ");
+            }
             Console.Write("  " + s);
             for (int i = 0; i < Console.WindowWidth*2  - s.Length-2; i++) {
                 Console.Write(" ");                
             }
-            Console.CursorTop = Console.WindowHeight - 1;
+            Console.CursorTop = Console.WindowHeight-1;
             for (int i = 0; i < Console.WindowWidth; i++) {
                 Console.Write(" ");
             }
-            Console.CursorTop = 3;
-            Console.CursorLeft = 0;
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = ConsoleColor.White;
         }
         public static void WriteDirect(int Top, int Left,string message) {
             Console.CursorLeft = Left;
             Console.CursorTop = Top;
-            for (int i = 0; i < Console.WindowWidth-1 && i<message.Length; i++) {
+            for (int i = 0; i < Console.WindowHeight-2 && i<message.Length; i++) {
                 Console.Write(message[i]);
+            }
+        }
+        public static void ClearLine(int top) {
+            Console.SetCursorPosition(0, top);
+            for (int i = 0; i < Console.WindowWidth; i++)
+            {
+                Console.Write(" ");
             }
         }
     }
