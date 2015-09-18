@@ -277,7 +277,7 @@ namespace DODODoS {
             string username = Console.ReadLine();
             string message = "";
             new Thread(() => {
-                var v = littleChat.Recive();
+                var v = littleChat.Receive();
                 if (ptr < ChatBuffer.Length) {
                     ChatBuffer[ptr] = v;
                     ptr++;
