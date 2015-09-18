@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace Chat{
     static class littleChat{
-        public static readonly string Signature = "-Dodo-";
+        public static readonly string Signature = "";
              
         static IPEndPoint ipe = new IPEndPoint(IPAddress.Any, 666);
         static UdpClient udp = new UdpClient(ipe);
@@ -22,43 +22,50 @@ namespace Chat{
             var temp = Regex.Match(mess, Signature + ".*" + Signature);
             if (temp.Success)
             {
-                return temp.Value;
+                return temp.ToString();
             }
             return Receive();
         }
     }
     public static class consoleInterface {
+        public static object obj = new object();
         public static void DrawTop(string s) {
-            Console.SetCursorPosition(0, 0);
-            Console.BackgroundColor = ConsoleColor.Gray;
-            Console.ForegroundColor = ConsoleColor.Black;
-            for (int i = 0; i < Console.WindowWidth; i++)
-            {
-                Console.Write(" ");
+            lock (obj) { 
+                Console.SetCursorPosition(0, 0);
+                Console.BackgroundColor = ConsoleColor.Gray;
+                Console.ForegroundColor = ConsoleColor.Black;
+                for (int i = 0; i < Console.WindowWidth; i++)
+                {
+                    Console.Write(" ");
+                }
+                Console.Write("  " + s);
+                for (int i = 0; i < Console.WindowWidth*2  - s.Length-2; i++) {
+                    Console.Write(" ");                
+                }
+                Console.CursorTop = Console.WindowHeight-1;
+                for (int i = 0; i < Console.WindowWidth; i++) {
+                    Console.Write(" ");
+                }
+                Console.BackgroundColor = ConsoleColor.Black;
+                Console.ForegroundColor = ConsoleColor.White;
             }
-            Console.Write("  " + s);
-            for (int i = 0; i < Console.WindowWidth*2  - s.Length-2; i++) {
-                Console.Write(" ");                
-            }
-            Console.CursorTop = Console.WindowHeight-1;
-            for (int i = 0; i < Console.WindowWidth; i++) {
-                Console.Write(" ");
-            }
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.ForegroundColor = ConsoleColor.White;
         }
         public static void WriteDirect(int Top, int Left,string message) {
-            Console.CursorLeft = Left;
-            Console.CursorTop = Top;
-            for (int i = 0; i < Console.WindowHeight-2 && i<message.Length; i++) {
-                Console.Write(message[i]);
+            lock (obj) { 
+                Console.CursorLeft = Left;
+                Console.CursorTop = Top;
+                for (int i = 0; i < Console.WindowHeight-2 && i<(message??"").Length; i++) {
+                    Console.Write(message[i]);
+                }
             }
         }
         public static void ClearLine(int top) {
-            Console.SetCursorPosition(0, top);
-            for (int i = 0; i < Console.WindowWidth; i++)
-            {
-                Console.Write(" ");
+            lock (obj) { 
+                Console.SetCursorPosition(0, top);
+                for (int i = 0; i < Console.WindowWidth; i++)
+                {
+                    Console.Write(" ");
+                }
             }
         }
     }

@@ -119,14 +119,11 @@ namespace DODODoS {
             cmd.Add("exit", new Action(Exit));
 
         }
-        static void GetLocalIP()
-        {
+        static void GetLocalIP() {
             var host = Dns.GetHostEntry(Dns.GetHostName());
             bool print = false;
-            foreach (var ip in host.AddressList)
-            {
-                if (ip.AddressFamily == AddressFamily.InterNetwork)
-                {
+            foreach (var ip in host.AddressList) {
+                if (ip.AddressFamily == AddressFamily.InterNetwork) {
                     if (print)
 
                         Console.WriteLine("My IP: " + ip.ToString());
@@ -277,66 +274,55 @@ namespace DODODoS {
             string username = Console.ReadLine();
             string message = "";
             new Thread(() => {
-                while (true)
-                {
+                while (true) {
                     var v = littleChat.Receive();
                     EditChatBuffer(v);
+
                     consoleInterface.DrawTop("DodoSWAG CHAT 1.00");
-                    for (int i = 0; i < ChatBuffer.Length; i++ )
-                    {
+                    for (int i = 0; i < ChatBuffer.Length; i++) {
                         consoleInterface.WriteDirect(i + 3, 1, ChatBuffer[i]);
                     }
+
                 }
 
             }) { IsBackground = true }.Start();
-            new Thread(()=> {
-                while (true)
-                {
+            new Thread(() => {
+                while (true) {
                     WriteChatBuffer();
                     Thread.Sleep(1000);
                 }
-            }) {IsBackground = true }.Start();
+            }) { IsBackground = true }.Start();
             while (message != "/exit") {
-                consoleInterface.WriteDirect(Console.WindowHeight-1,0," > ");
-                message = "<" +username + ">" + Console.ReadLine();
+                consoleInterface.WriteDirect(Console.WindowHeight - 1, 0, " > ");
+                message = "<" + username + ">" + Console.ReadLine();
                 consoleInterface.DrawTop("DodoSWAG CHAT 1.00");
                 littleChat.Send(message);
-                EditChatBuffer(message);                
+                EditChatBuffer(message);
             }
 
 
         }
-        static void EditChatBuffer(string l)
-        {
-            lock (toLockChat)
-            {
-                consoleInterface.ClearLine(ptr + 4);
-                if (ptr < ChatBuffer.Length)
-                {
-                    ChatBuffer[ptr] = l;
-                    ptr++;
-                }
-                else
-                {
-                    ptr = 0;
-                    ChatBuffer[ptr] = l;
-                    
-                }
+        static void EditChatBuffer(string l) {
+            consoleInterface.ClearLine(ptr + 4);
+            if (ptr < ChatBuffer.Length) {
+                ChatBuffer[ptr] = l;
+                ptr++;
+            } else {
+                ptr = 0;
+                ChatBuffer[ptr] = l;
+
             }
+
         }
-        static void WriteChatBuffer()
-        {
-            lock (toLockChat)
-            {
-                var top = Console.CursorTop;
-                var left = Console.CursorLeft;
-                for (int i = 0; i < ChatBuffer.Length; i++)
-                {
-                    consoleInterface.WriteDirect(i + 4, 1, ChatBuffer[i]??"");
-                }
-                Console.CursorTop = top;
-                Console.CursorLeft = left;
+        static void WriteChatBuffer() {
+            var top = Console.WindowHeight - 1;
+            var left = Console.CursorLeft;
+            for (int i = 0; i < ChatBuffer.Length; i++) {
+                consoleInterface.WriteDirect(i + 4, 1, ChatBuffer[i] ?? "");
             }
+            Console.CursorTop = top;
+            Console.CursorLeft = left;
         }
+
     }
 }
