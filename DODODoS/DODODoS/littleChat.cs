@@ -6,14 +6,14 @@ using System.Text.RegularExpressions;
 
 namespace Chat{
     static class littleChat{
-        public static readonly string Signature = "\\?-Dodo-\\?";
+        public static readonly string Signature = "-Dodo-";
              
-        static IPEndPoint ipe = new IPEndPoint(IPAddress.Any, 766);
+        static IPEndPoint ipe = new IPEndPoint(IPAddress.Any, 666);
         static UdpClient udp = new UdpClient(ipe);
 
         public static void Send(string s){
             var udp = new UdpClient();
-            var mess = UTF8Encoding.UTF8.GetBytes(Signature + udp + Signature);
+            var mess = UTF8Encoding.UTF8.GetBytes(Signature + s + Signature);
             udp.Send(mess, mess.Length, new IPEndPoint(IPAddress.Broadcast, 666));
         }
         public static string Receive()
