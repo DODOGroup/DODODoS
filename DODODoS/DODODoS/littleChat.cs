@@ -12,7 +12,7 @@ namespace DODODoS{
             var mess = UTF8Encoding.UTF8.GetBytes(Signature + udp + Signature);
             udp.Send(mess, mess.Length, new IPEndPoint(IPAddress.Broadcast, 666));
         }
-        public static string Recive()
+        public static string Receive()
         {
             var udp = new UdpClient();
             var ipe = new IPEndPoint(IPAddress.Any,666);
@@ -22,7 +22,7 @@ namespace DODODoS{
             {
                 return temp.Value;
             }
-            return Recive();
+            return Receive();
         }
     }
 }
