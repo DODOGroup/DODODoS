@@ -115,7 +115,7 @@ namespace DODODoS {
             cmd.Add("list", new Action(List));
             cmd.Add("clear", new Action(Clear));
             cmd.Add("help", new Action(Help));
-            cmd.Add("chat", new Action(StartChat));
+            //cmd.Add("chat", new Action(StartChat));   REMOVED UNTIL IT WORKS
             cmd.Add("exit", new Action(Exit));
 
         }
