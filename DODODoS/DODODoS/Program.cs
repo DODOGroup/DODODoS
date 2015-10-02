@@ -120,16 +120,18 @@ namespace DODODoS {
 
         }
         static void GetLocalIP() {
-            var host = Dns.GetHostEntry(Dns.GetHostName());
-            bool print = false;
-            foreach (var ip in host.AddressList) {
-                if (ip.AddressFamily == AddressFamily.InterNetwork) {
-                    if (print)
+            string IP4Address = String.Empty;
 
-                        Console.WriteLine("My IP: " + ip.ToString());
-                    print = true;
+            foreach (IPAddress IPA in Dns.GetHostAddresses(Dns.GetHostName()))
+            {
+                if (IPA.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    IP4Address = IPA.ToString();
+                    break;
                 }
             }
+
+            Console.WriteLine("My IP: " + IP4Address);
         }
         static void Exit() {
             Environment.Exit(0);
