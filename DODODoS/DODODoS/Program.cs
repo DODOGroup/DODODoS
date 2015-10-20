@@ -14,9 +14,6 @@ namespace DODODoS {
         static List<Tuple<string, UDP>> UdpVictims = new List<Tuple<string, UDP>>();
         static List<Tuple<string, TCP>> TcpVictims = new List<Tuple<string, TCP>>();
         static string pluginPath = "plugins";
-        static Process FakeConsole = new Process();
-        static string FakeConsoleLog = "";
-        static readonly string FakeConsolePointer = @"C:\User\{0}";
         static string[] ChatBuffer = new string[Console.WindowHeight - 5];
         static int ptr = 0;
 
@@ -40,62 +37,7 @@ namespace DODODoS {
                     Console.WriteLine("Unknown command");
             }
         }
-        /// <summary>
-        /// This method erases the console and let u use the windows commands
-        /// </summary>
-        static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e) {
-            lock (toLockSyncHiddenNot) {
-                e.Cancel = true;
-                Console.Clear();
-                Console.Write(FakeConsoleLog);
-                FakeConsoleLog = "";
-                string command = "";
-                command = Console.ReadLine();
-                while (command != "exit") {
-                    FakeConsole.StandardInput.WriteLine(command);
-                    while (FakeConsoleLog != "") {
-                        lock (toLockSyncThread) {
-                            Console.WriteLine(FakeConsoleLog);
-                            FakeConsoleLog = "";
-                        }
-                    }
-                    Console.Write(FakeConsolePointer + ">");
-                    command = Console.ReadLine();    //Write what is new in the log, writes the pointer and waits for commands
-                }
-            }
-        }
-        /// <summary>
-        /// Creates the fake console
-        /// </summary>
-        static void CreateFakeConsole() {
-            ProcessStartInfo psi = new ProcessStartInfo() {
-                FileName = "cmd.exe",
-                UseShellExecute = false,
-                RedirectStandardError = true,
-                RedirectStandardInput = true,
-                RedirectStandardOutput = true,
-            };
-            FakeConsole.StartInfo = psi;
-            FakeConsole.Start();
-            #region Creazione thread lettura
-            new Thread(() => {
-                while (!FakeConsole.StandardOutput.EndOfStream) {
-                    string s = FakeConsole.StandardOutput.ReadLine();
-                    lock (toLockSyncThread) {
-                        FakeConsoleLog += s + "\n";
-                    }
-                }
-            }) { IsBackground = true, }.Start();
-            new Thread(() => {
-                while (!FakeConsole.StandardError.EndOfStream) {
-                    string s = FakeConsole.StandardError.ReadLine();
-                    lock (toLockSyncThread) {
-                        FakeConsoleLog += s + "\n";
-                    }
-                }
-            }) { IsBackground = true, }.Start();
-            #endregion
-        }
+
         /// <summary>
         /// Loads the commands in the dictionary
         /// </summary>
