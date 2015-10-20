@@ -25,12 +25,12 @@ namespace DODODoS {
         static object toLockChat = new object();
 
         static void Main(string[] args) {
-            Console.CancelKeyPress += Console_CancelKeyPress;
+            //Console.CancelKeyPress += Console_CancelKeyPress;
             bool exit = true;
-            CreateFakeConsole();
+            //CreateFakeConsole();
             LoadCommands();
             Help();
-
+            
             while (exit) {
                 lock (toLockSyncHiddenNot) { Console.Write("DODODoS> "); } //This will leave the thread in a holded state as if it has been paused when the ddos is hidden
                 string command = Console.ReadLine(); //Control+C will leave a null string resulting in Argument Exception
@@ -291,20 +291,14 @@ namespace DODODoS {
             };
             plg.StartInfo = psi;
             plg.Start();
-            new Thread(() =>
-            {
+            while(!plg.StandardOutput.EndOfStream)
                 while (!plg.StandardOutput.EndOfStream)
                 {
                     Console.WriteLine(plg.StandardOutput.ReadLine());
                 }
-            }) { IsBackground = true }.Start();
-
-
-            while (!plg.StandardOutput.EndOfStream)
-            {
                 plg.StandardInput.WriteLine(Console.ReadLine());
-            }
             return true;
+
         }
 
         static void StartChat() {
