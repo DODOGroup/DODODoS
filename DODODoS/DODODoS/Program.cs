@@ -5,7 +5,6 @@ using System.IO;
 using System.Diagnostics;
 using System.Threading;
 using System.Net;
-using Chat;
 using System.Net.Sockets;
 
 namespace DODODoS
@@ -17,10 +16,6 @@ namespace DODODoS
         static List<Tuple<string, TCP>> TcpVictims = new List<Tuple<string, TCP>>();
         static string pluginPath = "plugins";
 
-        static object toLockSyncThread = new object();
-        static object toLockSyncHiddenNot = new object();
-        static object toLockChat = new object();
-
         static void Main(string[] args)
         {
             //Console.CancelKeyPress += Console_CancelKeyPress;
@@ -31,7 +26,7 @@ namespace DODODoS
 
             while (exit)
             {
-                lock (toLockSyncHiddenNot) { Console.Write("DODODoS> "); } //This will leave the thread in a holded state as if it has been paused when the ddos is hidden
+                Console.Write("DODODoS> ");
                 string command = Console.ReadLine(); //Control+C will leave a null string resulting in Argument Exception
                 if (command != null && cmd.ContainsKey(command)) //No argument Exception cause the first check is on the null
                     cmd[command]();
@@ -61,10 +56,10 @@ namespace DODODoS
             cmd.Add("stop", new Action(Stop));
             cmd.Add("list", new Action(List));
 
-            foreach (string plugin in Directory.GetFiles(pluginPath))
+            /*foreach (string plugin in Directory.GetFiles(pluginPath))
             {
                 cmd.Add(Path.GetFileNameWithoutExtension(plugin), new Action(() => PlgExec(plugin)));
-            }
+            }*/
 
             cmd.Add("clear", new Action(Clear));
             cmd.Add("help", new Action(Help));
